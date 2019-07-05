@@ -3,7 +3,7 @@ try{
 	    properties([parameters([choice(choices: ['master', 'dev', 'qa', 'staging'], description: 'Choose branch to build and deploy', name: 'gitBranch')]), pipelineTriggers([pollSCM('')])])
     stage('Git Checkout'){
 		git credentialsId: 'github', 
-		    url: 'https://github.com/javahometech/my-app',
+		    url: 'https://github.com/sainuthalapati/my-app',
 			branch: "${params.gitBranch}"
 	}
 	
@@ -12,10 +12,10 @@ try{
 	}
 	stage('Deploy to Dev'){
 		sh 'mv target/*.war target/myweb.war'
-		sshagent(['tomcat-dev']) {
-			sh 'ssh ec2-user@172.31.17.196 rm -rf /opt/tomcat8/webapps/myweb*'
+		sshagent(['tomcat-tomcat8']) {
+			sh 'ssh ec2-user@172.31.6.229 rm -rf /opt/tomcat8/webapps/myweb*'
 		    sh 'scp target/myweb.war ec2-user@172.31.17.196:/opt/tomcat8/webapps/'
-		    sh 'ssh ec2-user@172.31.17.196 sudo service tomcat restart'
+		    sh 'ssh ec2-user172.31.6.229@ sudo service tomcat restart'
 		}
 	    slackSend channel: '#devops-2',
 				  color: 'good',
